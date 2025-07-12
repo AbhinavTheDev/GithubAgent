@@ -1,0 +1,15 @@
+[project]
+name = "githubagent"
+version = "0.1.0"
+description = "DevCompass Backend API"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "agno>=1.7.1",
+    "chromadb>=1.0.15",
+    "fastapi>=0.116.0",
+    "fastembed>=0.7.1",
+    "groq>=0.29.0",
+    "pygithub>=2.6.1",
+    "sqlalchemy>=2.0.41",
+]
