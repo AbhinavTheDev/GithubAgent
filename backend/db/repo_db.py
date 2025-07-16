@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 from datetime import datetime
-from typing import List, Optional, Tuple
+from typing import List, Optional, Tuple, Dict, Any
 from sqlalchemy.orm import sessionmaker, Session, relationship
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import create_engine, Column, Integer, String, DateTime, func, Text
@@ -19,9 +19,18 @@ class Repository(Base):
     last_updated = Column(DateTime, default=func.now(), onupdate=func.now())
     podcast_script = Column(Text, nullable=True)
     diagram_script = Column(Text, nullable=True)
+    name = Column(String, nullable=True)
+    description = Column(Text, nullable=True)
+    stars = Column(Integer, nullable=True)
+    forks = Column(Integer, nullable=True)
+    issues = Column(Integer, nullable=True)
+    license = Column(String, nullable=True)
+    owner = Column(String, nullable=True)
+    last_activity: Optional[List[Dict[str, Any]]] = None
     chat_history = relationship(
         "ChatHistory", back_populates="repository", cascade="all, delete-orphan"
     )
+
 
 class RepositoryDataManager:
     def __init__(self, db_path: str = "./data/repositories.db"):
@@ -142,6 +151,21 @@ class RepositoryDataManager:
                 )
                 if repo:
                     repo.diagram_script = script
+                    session.commit()
+            except Exception as e:
+                session.rollback()
+                raise e
+
+    def update_repository_metadata(self, repo_id: int, metadata: dict):
+        with self.get_session() as session:
+            try:
+                repo = (
+                    session.query(Repository).filter(Repository.id == repo_id).first()
+                )
+                if repo:
+                    for key, value in metadata.items():
+                        if hasattr(repo, key):
+                            setattr(repo, key, value)
                     session.commit()
             except Exception as e:
                 session.rollback()

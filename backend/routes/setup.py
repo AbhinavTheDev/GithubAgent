@@ -22,14 +22,18 @@ github_agent = get_agent()
 def setup_repo(repo_url: str):
     """Background task to process a repository."""
     state.processing_start_time = datetime.now()
-    success = github_agent.process_repository(repo_url)
+    success, repo_id = github_agent.process_repository(repo_url)
 
     if success:
         state.agent_ready = True
-        return {"success": True}
+        state.last_processed_repo_id = repo_id
+        state.agent_error = False
+        state.error_message = None
     else:
         state.agent_error = True
-        return {"success": False, "error": "Failed to set up agent"}
+        state.error_message = "Failed to process repository."
+        state.agent_ready = False
+        state.last_processed_repo_id = None
 
 
 # Set Up Repo for Agent
@@ -37,6 +41,8 @@ def setup_repo(repo_url: str):
 async def set_repo_endpoint(req: SetRepoRequest, background_tasks: BackgroundTasks):
     state.agent_ready = False
     state.agent_error = False
+    state.error_message = None
+    state.last_processed_repo_id = None
 
     background_tasks.add_task(setup_repo, req.url)
 

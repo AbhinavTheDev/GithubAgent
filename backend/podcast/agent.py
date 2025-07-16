@@ -4,6 +4,7 @@ import chromadb
 from db.repo_db import RepositoryDataManager
 from core.config import settings
 
+
 class PodcastAgent:
     def __init__(self):
         self.groq_client = Groq(api_key=settings.GROQ_API_KEY)
@@ -59,6 +60,14 @@ class PodcastOrchestrator:
         self.chroma_client = chromadb.PersistentClient(path=chroma_path)
         self.podcast_agent = PodcastAgent()
 
+    def truncate_context(docs, max_chars=6000):
+        context = ""
+        for doc in docs:
+            if len(context) + len(doc) > max_chars:
+                break
+            context += "\n\n---\n\n" + doc
+        return context
+
     def generate_script_for_repo(self, repo_id: int) -> str:
         """
         Fetches full context for a repo and generates a podcast script.
@@ -87,7 +96,8 @@ class PodcastOrchestrator:
             if not results or not results.get("documents"):
                 return "Error: No context found for this repository. Please ensure it has been processed."
 
-            context = "\n\n---\n\n".join(results["documents"])
+            docs = "\n\n---\n\n".join(results["documents"])
+            context = self.truncate_context(docs, max_chars=6500)
             topic = f"A deep dive into the {os.path.basename(repo_url)} repository."
 
         except Exception as e:

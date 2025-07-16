@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import List, Dict, Any, Optional, Tuple
 from dataclasses import dataclass
 from dotenv import load_dotenv
+import json
 
 # Core libraries
 from github import Github
@@ -263,6 +264,40 @@ class GitHubRepoAssistant:
             print(f"Error generating summary for {file_path}: {e}")
             return f"File: {file_path}\nContent preview: {file_content[:200]}..."
 
+    def fetch_github_metadata(self, repo_url: str):
+        # Extract owner/repo from URL
+        parts = repo_url.rstrip("/").split("/")
+        owner, repo_name = parts[-2], parts[-1]
+        repo = self.github.get_repo(f"{owner}/{repo_name}")
+
+        # Get last commit on default branch
+        branch = repo.default_branch
+        commits = repo.get_commits(sha=branch)
+        last_commits = []
+        for i in range(min(3, commits.totalCount)):
+            commit = commits[i]
+            last_commits.append(
+                {
+                    "sha": commit.sha,
+                    "message": commit.commit.message,
+                    "author": commit.commit.author.name,
+                    "date": commit.commit.author.date.isoformat(),
+                    "url": commit.html_url,
+                }
+            )
+        last_activity = json.dumps(last_commits) if last_commits else None
+
+        return {
+            "name": repo.name,
+            "description": repo.description,
+            "stars": repo.stargazers_count,
+            "forks": repo.forks_count,
+            "issues": repo.open_issues_count,
+            "license": repo.license.spdx_id if repo.license else None,
+            "owner": owner,
+            "last_activity": last_activity,
+        }
+
     def process_repository(self, repo_url: str) -> Tuple[bool, int]:
         """
         Main workflow: GitHub Repo → Store URLs in db with ID → Parse Code → Summarize → Store in VectorDB
@@ -270,8 +305,15 @@ class GitHubRepoAssistant:
         try:
             print(f"=============Processing repository: {repo_url}")
 
-            # Add repository to database and get ID
+            # Add repository to database
             repo_id = self.repo_manager.add_repository(repo_url)
+
+            # Add Repo MetaData in DB
+            print(f"=============fetching repository metadata: {repo_url}")
+            metadata = self.fetch_github_metadata(repo_url)
+            self.repo_manager.update_repository_metadata(repo_id, metadata)
+
+            # Get Repo ID
             repo_data = self.repo_manager.get_repository(repo_id)
 
             if not repo_data:

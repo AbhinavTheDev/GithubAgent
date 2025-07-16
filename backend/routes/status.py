@@ -8,12 +8,13 @@ router = APIRouter()
 def get_status():
     if state.agent_error:
         return {
-            "status": "error", 
-            "message": "Setup failed",
+            "status": "error",
+            "message": state.error_message or "Setup failed",
         }
     elif state.agent_ready:
         return {
             "status": "ready",
+            "repo_id": state.last_processed_repo_id,
         }
     else:
         elapsed = None

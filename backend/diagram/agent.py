@@ -15,35 +15,24 @@ class DiagramAgent:
         """
         Generate a Mermaid graph for the file structure using Groq LLM.
         """
+        # Extract the repository name from the URL
+        repo_name = repo_url.rstrip("/").split("/")[-1]
         # Create a formatted string of file paths for the prompt
         file_list_str = "\n".join(f"- {path}" for path in file_paths)
 
         prompt = f"""
-        You are an expert at creating Mermaid diagrams. Your task is to generate a Mermaid graph that visualizes the file structure of a GitHub repository.
+        Given the file structure of a GitHub repository, generate an optimized Mermaid diagram that represents the high-level architecture of the codebase. Group related files and directories into logical components (e.g., controllers, models, utils, api) and represent these components as subgraph nodes in the diagram. Use only the following Mermaid syntax: graph, subgraph, and --> (for connections). Ensure that:
 
-        **Repository:** {repo_url}
-
-        **File Structure:**
-        ```
-        {file_list_str}
-        ```
-
-        **Instructions:**
-        1.  Create a `graph TD` (top-down tree graph).
-        2.  Represent directories and files as nodes. Use the full path for uniqueness if necessary, but render only the base name.
-        3.  Show the hierarchy by connecting directories to their subdirectories and files.
-        4.  Do not include the root directory '.' in the graph.
-        5.  Provide only the Mermaid code block, starting with ```mermaid and ending with ```. Do not add any other explanation.
-
-        **Example Output Format:**
-        ```mermaid
-        graph TD
-            A["Directory A"] --> B["File B.py"];
-            A --> C["Sub-Directory C"];
-            C --> D["File D.js"];
-        ```
-
-        Now, generate the Mermaid graph for the provided file structure.
+        Files belonging to a logical component are included within its subgraph and do not appear as separate nodes outside the subgraph.
+        Connections are made between subgraphs or high-level components, avoiding redundant links to individual files.
+        Only critical entry points (e.g., main.py, app.js, config.json) or standalone files (e.g., deploy.sh, requirements.txt) are represented as separate nodes outside of subgraphs.
+        The root directory acts as the top-level node, with subgraphs representing major components of the codebase. Prioritize simplicity, readability, and scalability. Avoid clutter by collapsing subdirectories into logical components where appropriate.
+        
+        project_name: {repo_name}
+        
+        file structure: {file_list_str}
+        
+        Diagram:
         """
 
         try:

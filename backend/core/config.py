@@ -10,7 +10,7 @@ class Settings(BaseSettings):
     """Application settings"""
 
     # DB Paths
-    chroma_db_path: str = "./chroma_db"
+    chroma_db_path: str = "./data/chroma_db"
     repo_db_path: str = "./data/repositories.db"
 
     # API settings

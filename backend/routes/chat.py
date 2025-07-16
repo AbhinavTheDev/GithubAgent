@@ -82,7 +82,7 @@ def get_chat_history(repo_id: int):
             )
 
         history = chat_history_manager.get_chat_history(repo_id)
-        return history
+        return [ChatHistoryItem.model_validate(item, from_attributes=True) for item in history]
     except Exception as e:
         raise HTTPException(
             status_code=500, detail=f"Failed to retrieve chat history: {e}"
