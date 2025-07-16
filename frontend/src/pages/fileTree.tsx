@@ -36,7 +36,14 @@ export const FileTreePage = () => {
           let script = data.graph_script?.trim() ?? "";
           // Remove code block markers and language tag if present
           if (script.startsWith("```")) {
-            script = script.replace(/^```mermaid\s*/i, "").replace(/```$/, "").trim();
+            // // Option 1: Remove only code block markers and language tag
+            // script = script.replace(/^```(?:mermaid)?\s*/i, "").replace(/```$/, "").trim();
+
+            // Option 2: Extract only content inside code block markers if present
+            const blockMatch = script.match(/```(?:mermaid)?\s*([\s\S]*?)```/i);
+            if (blockMatch) {
+              script = blockMatch[1].trim();
+            }
           }
           setChart(script);
         })

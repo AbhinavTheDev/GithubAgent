@@ -6,31 +6,21 @@ export function Header() {
       <div className="text-xl md:text-2xl font-bold font-serif">
         Dev Compass
       </div>
-      <nav className="flex gap-6 items-center">
-        <Link
-          href="/dashboard"
-          className="hover:underline text-base font-medium text-foreground"
-        >
-          Dashboard
-        </Link>
-        <Link
-          href="/chat"
-          className="hover:underline text-base font-medium text-foreground"
-        >
-          Chat
-        </Link>
-        <Link
-          href="/file-tree"
-          className="hover:underline text-base font-medium text-foreground"
-        >
-          File Tree
-        </Link>
-        <Link
-          href="/audio"
-          className="hover:underline text-base font-medium text-foreground"
-        >
-          Audio
-        </Link>
+      <nav id="navbarCollapse" className="">
+        <ul className="flex justify-between items-center gap-10 text-base">
+          <Link href="/dashboard" className=" hover:text-foreground/60">
+            Home
+          </Link>
+          <Link href="/chat" className="hover:text-foreground/60">
+            Chat
+          </Link>
+          <Link href="/file-tree" className=" hover:text-foreground/60">
+            File Tree
+          </Link>
+          <Link href="/audio" className=" hover:text-foreground/60">
+            Audio
+          </Link>
+        </ul>
       </nav>
     </div>
   );

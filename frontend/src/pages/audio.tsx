@@ -60,8 +60,14 @@ export const AudioPreviewPage = () => {
       utterance.voice = zira;
     }
 
-    utterance.onend = () => setIsPlaying(false);
-    utterance.onerror = () => setIsPlaying(false);
+    utterance.onend = () => {
+      setIsPlaying(false);
+      setScript(""); // Clear script after playback ends
+    };
+    utterance.onerror = () => {
+      setIsPlaying(false);
+      setScript(""); // Clear script on error
+    };
 
     utteranceRef.current = utterance;
     setIsPlaying(true);
@@ -71,6 +77,7 @@ export const AudioPreviewPage = () => {
   const handleStop = () => {
     window.speechSynthesis.cancel();
     setIsPlaying(false);
+    setScript(""); // Clear script when stopped
   };
 
   return (
@@ -83,38 +90,58 @@ export const AudioPreviewPage = () => {
             <p className="text-lg">Generating script...</p>
           </div>
         ) : script ? (
-          <div className="w-full h-full flex flex-col">
-            <h2 className="absolute top-8 left-8 text-lg font-semibold bg-background/80 backdrop-blur-sm p-2 rounded-md">
+            <div className="w-full h-full flex flex-col justify-center items-center">
+            <h2 className="text-lg font-semibold bg-background/80 backdrop-blur-sm p-2 rounded-md mb-6">
               Audio Preview
             </h2>
-            {isPlaying && (
-              <div className="flex justify-center mt-8">
+            <div className="flex flex-col items-center justify-center gap-6">
+              {isPlaying && (
+              <div className="flex justify-center">
                 {/* Simple animated pattern */}
                 <div className="flex gap-2">
-                  <div
-                    className="w-3 h-8 bg-primary animate-bounce"
-                    style={{ animationDelay: "0s" }}
-                  ></div>
-                  <div
-                    className="w-3 h-6 bg-primary animate-bounce"
-                    style={{ animationDelay: "0.1s" }}
-                  ></div>
-                  <div
-                    className="w-3 h-10 bg-primary animate-bounce"
-                    style={{ animationDelay: "0.2s" }}
-                  ></div>
-                  <div
-                    className="w-3 h-7 bg-primary animate-bounce"
-                    style={{ animationDelay: "0.3s" }}
-                  ></div>
-                  <div
-                    className="w-3 h-9 bg-primary animate-bounce"
-                    style={{ animationDelay: "0.4s" }}
-                  ></div>
+                <div
+                  className="w-3 h-8 bg-primary animate-bounce"
+                  style={{ animationDelay: "0s" }}
+                ></div>
+                <div
+                  className="w-3 h-6 bg-primary animate-bounce"
+                  style={{ animationDelay: "0.1s" }}
+                ></div>
+                <div
+                  className="w-3 h-10 bg-primary animate-bounce"
+                  style={{ animationDelay: "0.2s" }}
+                ></div>
+                <div
+                  className="w-3 h-7 bg-primary animate-bounce"
+                  style={{ animationDelay: "0.3s" }}
+                ></div>
+                <div
+                  className="w-3 h-9 bg-primary animate-bounce"
+                  style={{ animationDelay: "0.4s" }}
+                ></div>
                 </div>
               </div>
-            )}
-          </div>
+              )}
+              <div>
+              {!isPlaying ? (
+                <Button
+                onClick={handlePlay}
+                disabled={!script}
+                className="bg-primary text-primary-foreground hover:bg-primary/90"
+                >
+                Play
+                </Button>
+              ) : (
+                <Button
+                onClick={handleStop}
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                >
+                Stop
+                </Button>
+              )}
+              </div>
+            </div>
+            </div>
         ) : (
           <div className="text-center">
             <h1 className="text-3xl md:text-4xl font-bold font-serif mb-8">
@@ -128,12 +155,8 @@ export const AudioPreviewPage = () => {
               >
                 {isLoading ? "Generating..." : "Generate"}
               </Button>
-              <Button
-                className="ml-4"
-                onClick={isPlaying ? handleStop : handlePlay}
-                disabled={isLoading || !script}
-              >
-                {isPlaying ? "Stop" : "Play"}
+              <Button className="ml-4" disabled>
+                Play
               </Button>
             </div>
             {error && <p className="text-destructive mt-4">{error}</p>}

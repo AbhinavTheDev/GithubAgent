@@ -23,7 +23,7 @@ class RepoInfo(BaseModel):
     issues: int | None = None
     license: str | None = None
     owner: str | None = None
-    last_activity: Optional[Dict[str, Any]] = None
+    last_activity: Optional[List[Dict[str, Any]]] = None 
 
     class Config:
         model_config = {"from_attributes": True}

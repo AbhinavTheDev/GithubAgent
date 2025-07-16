@@ -60,9 +60,9 @@ class PodcastOrchestrator:
         self.chroma_client = chromadb.PersistentClient(path=chroma_path)
         self.podcast_agent = PodcastAgent()
 
-    def truncate_context(docs, max_chars=6000):
+    def truncate_context(self, repo_documents, max_chars=6500):
         context = ""
-        for doc in docs:
+        for doc in repo_documents:
             if len(context) + len(doc) > max_chars:
                 break
             context += "\n\n---\n\n" + doc
@@ -95,9 +95,8 @@ class PodcastOrchestrator:
 
             if not results or not results.get("documents"):
                 return "Error: No context found for this repository. Please ensure it has been processed."
-
-            docs = "\n\n---\n\n".join(results["documents"])
-            context = self.truncate_context(docs, max_chars=6500)
+            repo_documents = results["documents"]
+            context = self.truncate_context(repo_documents)
             topic = f"A deep dive into the {os.path.basename(repo_url)} repository."
 
         except Exception as e:

@@ -19,7 +19,92 @@ class DiagramAgent:
         repo_name = repo_url.rstrip("/").split("/")[-1]
         # Create a formatted string of file paths for the prompt
         file_list_str = "\n".join(f"- {path}" for path in file_paths)
+        systemPrompt = """
+When generating output, follow these strict formatting rules to ensure consistency and correctness:
 
+- Use Proper Syntax: Ensure the output adheres to the specified syntax (e.g., Mermaid syntax for diagrams). Do not deviate from the required format.
+- Avoid Redundancy: Do not duplicate nodes, subgraphs, or connections unnecessarily. Each component should appear only once unless explicitly required.
+- Logical Grouping: Group related elements (e.g., files, modules) into logical components using subgraph where appropriate. Ensure all elements within a subgraph are encapsulated and do not appear outside of it.
+- Connections Between Components: Use arrows (-->) to represent relationships between components or subgraphs. Avoid connecting individual files unless they are critical entry points.
+- Hierarchy: Start with the root directory or top-level node and expand into subgraphs or components in a hierarchical manner.
+- No Styling: Do not include any styling options (e.g., colors, shapes, labels) unless explicitly requested.
+- Output Structure: Present the output as a single block of code enclosed in triple backticks (```) with the appropriate language specifier (e.g., ```mermaid for Mermaid diagrams).
+- Clarity and Readability: Prioritize simplicity and readability. Avoid overly complex structures or unnecessary details.
+- Validation: Double-check the output to ensure it follows the specified format and is syntactically correct.
+If the input data is ambiguous or incomplete, make reasonable assumptions to complete the task but do not state any assumptions made.
+
+Example Input:
+If the file structure provided is:
+
+repo/
+├── src/
+│   ├── main.py
+│   ├── controllers/
+│   │   ├── auth_controller.py
+│   │   └── user_controller.py
+│   ├── models/
+│   │   ├── user_model.py
+│   │   └── product_model.py
+├── tests/
+│   ├── test_main.py
+│   ├── test_controllers/
+│   │   ├── test_auth_controller.py
+│   │   └── test_user_controller.py
+│   ├── test_models/
+│   │   ├── test_user_model.py
+│   │   └── test_product_model.py
+└── requirements.txt
+
+Expected Output:
+```mermaid
+graph TD
+    repo[repo]
+    repo --> src[src]
+    repo --> tests[tests]
+    repo --> README.md
+    repo --> requirements.txt
+
+    subgraph src
+        src_main[main.py]
+        controllers[controllers]
+        models[models]
+
+        subgraph controllers
+            auth_controller[auth_controller.py]
+            user_controller[user_controller.py]
+        end
+
+        subgraph models
+            user_model[user_model.py]
+            product_model[product_model.py]
+        end
+
+        src_main --> controllers
+        src_main --> models
+    end
+
+    subgraph tests
+        test_main[test_main.py]
+        test_controllers[test_controllers]
+        test_models[test_models]
+
+        subgraph test_controllers
+            test_auth[test_auth_controller.py]
+            test_user[test_user_controller.py]
+        end
+
+        subgraph test_models
+            test_user_model[test_user_model.py]
+            test_product_model[test_product_model.py]
+        end
+
+        test_main --> test_controllers
+        test_main --> test_models
+    end
+
+    src --> tests
+```
+"""
         prompt = f"""
         Given the file structure of a GitHub repository, generate an optimized Mermaid diagram that represents the high-level architecture of the codebase. Group related files and directories into logical components (e.g., controllers, models, utils, api) and represent these components as subgraph nodes in the diagram. Use only the following Mermaid syntax: graph, subgraph, and --> (for connections). Ensure that:
 
@@ -38,7 +123,10 @@ class DiagramAgent:
         try:
             response = self.groq_client.chat.completions.create(
                 model=settings.GROQ_Diagram_MODEL_ID,
-                messages=[{"role": "user", "content": prompt}],
+                messages=[
+                    {"role": "system", "content": systemPrompt},
+                    {"role": "user", "content": prompt},
+                ],
                 max_tokens=2000,
                 temperature=0.1,
             )

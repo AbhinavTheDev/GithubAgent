@@ -26,7 +26,7 @@ class Repository(Base):
     issues = Column(Integer, nullable=True)
     license = Column(String, nullable=True)
     owner = Column(String, nullable=True)
-    last_activity: Optional[List[Dict[str, Any]]] = None
+    last_activity = Column(Text, nullable=True)
     chat_history = relationship(
         "ChatHistory", back_populates="repository", cascade="all, delete-orphan"
     )

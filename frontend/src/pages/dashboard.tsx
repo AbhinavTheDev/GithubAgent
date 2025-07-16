@@ -50,10 +50,10 @@ export function DashboardPage() {
 
   return (
     <>
-      <div className="flex flex-col w-full h-screen bg-background text-foreground">
+      <div className="flex flex-col w-full h-screen bg-white text-foreground">
         <Header />
         <div
-          className="flex-1 mx-4 my-2 border border-background rounded-lg overflow-y-auto p-4 [&::-webkit-scrollbar]:w-2
+          className="flex-1 mx-4 my-2 border border-background bg-background/80 rounded-lg overflow-y-auto p-4 [&::-webkit-scrollbar]:w-2
           [&::-webkit-scrollbar-track]:m-0.5
   [&::-webkit-scrollbar-track]:rounded-lg
   [&::-webkit-scrollbar-track]:bg-background
@@ -166,22 +166,26 @@ export function DashboardPage() {
               <div>
                 <h3 className="text-xl font-bold mb-4">Recent Activity:</h3>
                 <div className="space-y-2">
-                    repoInfo?.last_activity?.map(commit => (
-                  <p key={commit.sha} className="p-3 text-sm bg-popover rounded-lg shadow-sm">
+                  {Array.isArray(repoInfo?.last_activity) && repoInfo.last_activity.length > 0 ? (
+                  repoInfo.last_activity.map((commit: any) => (
+                    <div key={commit.sha} className="p-3 text-sm bg-popover rounded-lg shadow-sm">
                     <div className="flex justify-between items-center text-foreground/50">
                       <span>{commit.date}</span>
                       <span>
-                        <a href={commit.url} target="_blank">
-                          {commit.sha}
-                        </a>
+                      <a href={commit.url} target="_blank" rel="noopener noreferrer">
+                        {commit.sha}
+                      </a>
                       </span>
                     </div>
-                    <div  className="flex justify-between items-center">
+                    <div className="flex justify-between items-center">
                       <span>{commit.message}</span>
                       <span>{commit.author}</span>
                     </div>
-                  </p>
-                    ))
+                    </div>
+                  ))
+                  ) : (
+                  <p className="text-muted-foreground">No recent commits found.</p>
+                  )}
                 </div>
               </div>
               <div className="flex flex-col gap-3">
