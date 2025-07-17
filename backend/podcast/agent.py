@@ -13,10 +13,21 @@ class PodcastAgent:
         """
         Generate podcast script using Groq LLM based on provided context.
         """
-        prompt = f"""
-        You are the host of "Code Cast," a podcast that breaks down software projects for developers.
+        systemPrompt = """
+        You are the host of a podcast that breaks down software projects for developers.
         Your task is to create a short, engaging podcast script based on the provided information.
 
+        **Instructions:**
+        1.  Start with a catchy intro: "Hello there! Today, we're diving into..."
+        2.  Use the provided context to explain the repository and the episode's topic in a clear, conversational, and slightly enthusiastic tone.
+        3.  Structure the script like a monologue. You can use sections like "What is it?", "How does it work?", and "Key Takeaways".
+        4.  Do not just repeat the context. Synthesize it into a narrative.
+        5.  Conclude with a summary and a teaser for the next episode.
+        6.  The script should be approximately 2-3 minutes long when read aloud.
+        7.  Do not add anything apart from script. Script must start with 'Hello there' only. And it must end with script, do not include anything in last like 'Here's your 2-3 minute script'.
+        8.  For moving into next section so just do not add only Heading but make it appropriate for speech like, 'Let's move on to how it works' , 'Finally what conlusion we get from this'.
+        """
+        prompt = f"""
         **Podcast Details:**
         - **Repository:** {repo_url}
         - **Episode Topic:** {topic}
@@ -26,21 +37,16 @@ class PodcastAgent:
         {context}
         ---
 
-        **Instructions:**
-        1.  Start with a catchy intro: "Hello there! Today, we're diving into..."
-        2.  Use the provided context to explain the repository and the episode's topic in a clear, conversational, and slightly enthusiastic tone.
-        3.  Structure the script like a monologue. You can use sections like "What is it?", "How does it work?", and "Key Takeaways".
-        4.  Do not just repeat the context. Synthesize it into a narrative.
-        5.  Conclude with a summary and a teaser for the next episode.
-        6.  The script should be approximately 2-3 minutes long when read aloud.
-
-        Now, generate the podcast script.
+        Script:
         """
 
         try:
             response = self.groq_client.chat.completions.create(
                 model=settings.GROQ_POD_MODEL_ID,
-                messages=[{"role": "user", "content": prompt}],
+                messages=[
+                    {"role": "system", "content": systemPrompt},
+                    {"role": "user", "content": prompt},
+                ],
                 max_tokens=1500,
                 temperature=0.4,
             )
