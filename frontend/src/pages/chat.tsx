@@ -89,7 +89,7 @@ export const ChatPage = () => {
   return (
     <div className="flex flex-col w-full h-screen bg-background text-foreground">
       <Header />
-      <div className="flex-1 flex flex-col mx-4 my-2 border border-secondary rounded-lg bg-secondary/50 overflow-hidden">
+      <div className="flex-1 flex flex-col mx-4 my-2 border border-secondary rounded-lg bg-secondary/40 overflow-hidden">
         <div
           className="flex-1 overflow-y-auto p-4 [&::-webkit-scrollbar]:w-2
             [&::-webkit-scrollbar-track]:m-0.5

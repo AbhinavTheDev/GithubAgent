@@ -83,7 +83,7 @@ export const AudioPreviewPage = () => {
   return (
     <div className="flex flex-col w-full h-screen">
       <Header />
-      <div className="flex-1 m-2 overflow-hidden relative border border-accent bg-accent/50 rounded-lg flex flex-col justify-center items-center p-4">
+      <div className="flex-1 mx-4 my-2 overflow-hidden relative border border-accent bg-secondary/40 rounded-lg flex flex-col justify-center items-center p-4">
         {isLoading ? (
           <div className="flex flex-col items-center justify-center h-full">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mb-4"></div>

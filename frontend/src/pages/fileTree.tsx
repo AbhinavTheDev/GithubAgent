@@ -110,9 +110,9 @@ export const FileTreePage = () => {
   return (
     <div className="flex flex-col w-full h-screen">
       <Header />
-      <main className="flex-1 overflow-hidden relative">
+      <main className="flex-1 overflow-hidden relative ">
         <div className="w-full h-full p-4">
-          <div className="w-full h-full border border-background rounded-lg flex justify-center items-center">
+          <div className="w-full h-full bg-secondary/20 border border-accent rounded-lg flex justify-center items-center">
             {loading && <p>Loading diagram...</p>}
             {error && <p className="text-destructive">{error}</p>}
             {!loading && !error && chart && (
@@ -120,7 +120,7 @@ export const FileTreePage = () => {
             )}
           </div>
         </div>
-        <h2 className="absolute top-8 left-8 text-lg font-semibold bg-background/80 backdrop-blur-sm p-2 rounded-md">
+        <h2 className="absolute  top-8 left-8 text-lg font-semibold bg-background/80 backdrop-blur-sm p-2 rounded-md">
           File Structure
         </h2>
         <div className="absolute bottom-8 right-8 flex items-center gap-2">
