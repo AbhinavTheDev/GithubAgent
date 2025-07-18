@@ -4,6 +4,10 @@
 >
 > Dev Compass is an application that helps you to analyze GitHub repositories easily using our chat assistant and workflow diagram generator so that you spend less time on finding and more on working on the codebases. We also have a Audio Preview feature that allows you get an instant audio preview of codebase so that you can also listen what the codebase is doing and how — all powered by Agno and Groq.
 
+| Demo Video |
+|------------|
+| [![Video](https://i9.ytimg.com/vi/kEimO2RD3m0/mqdefault.jpg?v=6879b1d6&sqp=CKjj5sMG&rs=AOn4CLD3xC_CJSPoxHQtlbdN2nwqx-TFng)](https://youtu.be/kEimO2RD3m0)  |
+
 ## 🌟 Features
 
 - **Repository Setup:** Add any public GitHub repo for analysis.
