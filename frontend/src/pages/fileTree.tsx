@@ -34,17 +34,19 @@ export const FileTreePage = () => {
         })
         .then((data) => {
           let script = data.graph_script?.trim() ?? "";
+          // console.log(script)
           // Remove code block markers and language tag if present
-          if (script.startsWith("```")) {
+          if (script) {
             // // Option 1: Remove only code block markers and language tag
             // script = script.replace(/^```(?:mermaid)?\s*/i, "").replace(/```$/, "").trim();
-
+            console.log("if ke under script", script)
             // Option 2: Extract only content inside code block markers if present
-            const blockMatch = script.match(/```(?:mermaid)?\s*([\s\S]*?)```/i);
+            const blockMatch = script.match(/```(?:\w+)?\n([\s\S]*?)```/);
             if (blockMatch) {
               script = blockMatch[1].trim();
             }
           }
+          // console.log(script);
           setChart(script);
         })
         .catch((err) => {
