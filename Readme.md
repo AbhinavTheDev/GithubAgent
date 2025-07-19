@@ -39,8 +39,8 @@ Before you begin, ensure you have the following:
 ### 1. Clone the Repository
 
 ```sh
-git clone https://github.com/abhinavthedev/githubagent.git
-cd githubagent
+git clone https://github.com/abhinavthedev/devcompass.git
+cd devcompass
 ```
 
 ### 2. Backend Setup
